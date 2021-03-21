@@ -44,6 +44,8 @@ Eigen::ArrayXXd lambert(Eigen::Vector3d R0,Eigen::Vector3d Rf,double TOF, int DM
     long double f, g, g_dot;
     Eigen::Vector3d V0, Vf;
     Eigen::ArrayXXd V(3,2);
+    Eigen::ArrayXXd V1(3,2);
+    V1<<0,0,0,0,0,0;
     r0=R0.norm();
     rf=Rf.norm();
     cos_del_nu=R0.dot(Rf)/(r0*rf);
@@ -59,7 +61,13 @@ Eigen::ArrayXXd lambert(Eigen::Vector3d R0,Eigen::Vector3d Rf,double TOF, int DM
         psi_up=4*M_PI*M_PI;
         psi_down=-4*M_PI;
         del_t=0;
-        while (std::abs(TOF-del_t)>.1){
+        int maxiter=1000;
+        int i=1;
+        while (std::abs(TOF-del_t)>1e-6){
+            if (i>maxiter){
+                std::cout<<"error"<<std::endl;
+                return V1;
+            }
             y= r0 + rf + A*(psi*c3-1)/(std::sqrt(c2));
             ki=std::sqrt(y/c2);
             del_t=(ki*ki*ki*c3 + A*std::sqrt(y))/std::sqrt(mu);
@@ -72,6 +80,7 @@ Eigen::ArrayXXd lambert(Eigen::Vector3d R0,Eigen::Vector3d Rf,double TOF, int DM
             psi=(psi_up+psi_down)/2.0;
             c2=stumpff_C(psi);
             c3=stumpff_S(psi);
+            i++;
         }
     }
     f=1-y/r0;
