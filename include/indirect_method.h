@@ -11,6 +11,8 @@ class IndirectMethod{
         Eigen::Vector3d Thrust(Eigen::VectorXd x);//x is R,V,m,Lambda_R, Lambda_V, lambda_m        
         Eigen::VectorXd differential(Eigen::VectorXd x);//x is R,V,m,Lambda_R, Lambda_V, lambda_m
         void propagate();//
+        // to save the propagated trajectory
+        void save(std::string name);
         // void set_GAparam(Eigen::VectorXd param);
     private:
         //Eigen::VectorXd GAparam; //t0, m0, V_inf_0_x, V_inf_0_y, Lambda_R0, tf

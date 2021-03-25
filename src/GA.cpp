@@ -120,7 +120,7 @@ GA::GA(){
                 ParentGen_fitness(pop_size/2+k)=ithGen_fitness(pairings[k+pop_size/2]);
             }    
         }
-        std::cout<<i<<" out of "<<noi<<" selection done"<<std::endl;
+        std::cout<<i+1<<" out of "<<noi<<" selection done"<<std::endl;
 
         //Crossover
         std::shuffle(pairings.begin(),pairings.end(),std::default_random_engine(seed));
@@ -156,7 +156,7 @@ GA::GA(){
             i1thGen_fitness(k)=DM1.getFitness();
             i1thGen_fitness(k+pop_size/2)=DM2.getFitness();
         } 
-        std::cout<<i<<" out of "<<noi<<" crossover done"<<std::endl;
+        std::cout<<i+1<<" out of "<<noi<<" crossover done"<<std::endl;
 
         //Mutation
         for (int k = 0; k < pop_size; k++){
@@ -208,7 +208,7 @@ GA::GA(){
                 i1thGen_fitness(k)=DM3.getFitness();
             }
         }
-        std::cout<<i<<" out of "<<noi<<" mutation done"<<std::endl;
+        std::cout<<i+1<<" out of "<<noi<<" mutation done"<<std::endl;
 
         //elitism part 2
         //Finding worst 3 fitness indices for i+1 th Gen
@@ -219,7 +219,7 @@ GA::GA(){
         }
         ithGen_param=i1thGen_param;
         ithGen_fitness=i1thGen_fitness;
-        std::cout<<i<<" out of "<<noi<<" done"<<std::endl;
+        std::cout<<i+1<<" out of iterations "<<noi<<" done"<<std::endl;
     }
     BestGene=Eigen::VectorXd::Zero(8);
     Eigen::VectorXd::Index min_index;

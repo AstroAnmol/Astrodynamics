@@ -23,8 +23,6 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
     Lambda_R0(2)=param(6);
     tf=param(7);
 
-    Lambda_V0=V_inf_0*(m0+epsilon)*lambda_m0/(c_dash*(std::sqrt(std::pow(V_inf_0.norm(),2)+std::pow(ve,2))));
-
     double muE=398600;//km^3/s^2
     double muS=132712440018;//km^3/s^2
 
@@ -57,7 +55,7 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
     vc=std::sqrt(398600/(6371+200));// km/s
     ve=std::sqrt(2*398600/(6371+200));// km/s
     
-    // non-dimentionalising the velocities
+    // non-dimentionalising the vectors
     vc=vc*TU/AU;
     ve=ve*TU/AU;
     RMtf=RMtf/AU;
@@ -74,6 +72,8 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
 
     R0=REt0;
     V0=V_inf_0 + VEt0;
+
+    Lambda_V0=V_inf_0*(m0+epsilon)*lambda_m0/(c_dash*(std::sqrt(std::pow(V_inf_0.norm(),2)+std::pow(ve,2))));
 
     Eigen::VectorXd x0;
     x0=Eigen::VectorXd::Zero(14);
@@ -214,4 +214,64 @@ void IndirectMethod::propagate(){
     delV_f=delV_f.cwiseAbs();
 
     fitness=delR_f.sum()+delV_f.sum();
+}
+
+void IndirectMethod::save(std::string name){
+    int t=0;
+    double step=0.01;
+    //number of steps
+    int noi=tf/step;
+
+    Eigen::ArrayXXd x_propagated(14,noi+1);
+    
+    Eigen::ArrayXXd time(1,noi+1);
+
+    Eigen::ArrayXXd k1(14,1);
+    Eigen::ArrayXXd k2(14,1);
+    Eigen::ArrayXXd k3(14,1);
+    Eigen::ArrayXXd k4(14,1);
+
+    Eigen::VectorXd x0;
+    x0=Eigen::VectorXd::Zero(14);
+
+    x0.block(0,0,3,1)=R0;
+    x0.block(3,0,3,1)=V0;
+    x0(6)=m0;
+    x0.block(7,0,3,1)=Lambda_R0;
+    x0.block(10,0,3,1)=Lambda_V0;
+    x0(13)=lambda_m0;
+
+    // setting initial values
+    x_propagated.col(0)=x0;
+    time.col(0)=0;
+    while (t<noi){
+        //RK4 Integrator
+        k1= step*differential(x_propagated.col(t));
+        k2= step*differential(x_propagated.col(t) + k1/2);
+        k3= step*differential(x_propagated.col(t) + k2/2);
+        k4= step*differential(x_propagated.col(t) + k3);
+        x_propagated.col(t+1)= x_propagated.col(t)+(k1+2*k2+2*k3+k4)/6;
+
+        //Increasing Time Step
+        t++;
+        //set time
+        time.col(t)=step*t;
+    }
+    // Eigen Matrix print format to write csv files
+    Eigen::IOFormat csv(10, 0, ", ", "\n", "", "", "", "");
+    // Write file with R vector;
+    // Matrix of all data
+    Eigen::ArrayXXd Matrice(noi+1,14);
+    Matrice=x_propagated.transpose();
+    Matrice.conservativeResize(Matrice.rows(),Matrice.cols()+1);
+    Matrice.col(Matrice.cols()-1)=time.transpose();
+    std::ofstream theFile;
+    theFile.open(name + "_file.csv");
+    theFile << "Earth Radius:," << REt0.format(csv) << std::endl;
+    theFile << "Earth Velocity:," << VEt0.format(csv) << std::endl;
+    theFile << "Radius_1, Radius_2, Radius_3, Velocity_1, Velocity_2, Velocity_3, Mass, Adjoint Variables..." << std::endl;
+    theFile << Matrice.format(csv)<< std::endl<< std::endl<< std::endl;
+    theFile << "Mars Radius:," << RMtf.format(csv) << std::endl;
+    theFile << "Mars Velocity:," << VMtf.format(csv) << std::endl;
+    theFile.close();
 }

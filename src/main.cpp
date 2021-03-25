@@ -21,4 +21,6 @@ int main(){
         BestGeneT1=trial1.get_BestGene();;
         std::cout<<BestGeneT1.transpose()<<std::endl;
         std::cout<<trial1.get_BestFitness()<<std::endl;
+        IndirectMethod Best(BestGeneT1);
+        Best.save("Trial_1");
 }
