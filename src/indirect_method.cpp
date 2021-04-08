@@ -23,12 +23,16 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
     Lambda_R0(2)=param(6);
     tf=param(7);
 
-    double muE=398600;//km^3/s^2
-    double muS=132712440018;//km^3/s^2
+    //constants
+        double muE=398600;//km^3/s^2
+        double muS=132712440018;//km^3/s^2
+        double Re=6371; //km
+
+        double AU=149597870.700; //km
+        double VU=std::sqrt(muS/AU);
+        double TU=AU/VU;
 
 
-    double AU=149597870.700; //km
-    double TU=std::sqrt(AU*AU*AU/(muE+muS));
 
     //Setting Mars orbit
     // Initial orbit parameters taken from JPL HORIZONS in KM/S
@@ -52,8 +56,8 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
     REt0=RVE.block(0,0,3,1);
     VEt0=RVE.block(3,0,3,1);
 
-    vc=std::sqrt(398600/(6371+200));// km/s
-    ve=std::sqrt(2*398600/(6371+200));// km/s
+    vc=std::sqrt(muE/(Re+200));// km/s
+    ve=std::sqrt(2*muE/(Re+200));// km/s
     
     // non-dimentionalising the vectors
     vc=vc*TU/AU;
@@ -153,9 +157,9 @@ Eigen::VectorXd IndirectMethod::differential(Eigen::VectorXd x){//x is R,V,m,Lam
     output(4)=-R(1)/std::pow(r,3) + T(1)/m;
     output(5)=-R(2)/std::pow(r,3) + T(2)/m;
     output(6)=-t/c;
-    output(7)=-Lambda_V(0)/std::pow(r,3) + 3*R(0)*(R.dot(Lambda_V))/std::pow(r,5);
-    output(8)=-Lambda_V(1)/std::pow(r,3) + 3*R(1)*(R.dot(Lambda_V))/std::pow(r,5);
-    output(9)=-Lambda_V(2)/std::pow(r,3) + 3*R(2)*(R.dot(Lambda_V))/std::pow(r,5);
+    output(7)=Lambda_V(0)/std::pow(r,3) - 3*R(0)*(R.dot(Lambda_V))/std::pow(r,5);
+    output(8)=Lambda_V(1)/std::pow(r,3) - 3*R(1)*(R.dot(Lambda_V))/std::pow(r,5);
+    output(9)=Lambda_V(2)/std::pow(r,3) - 3*R(2)*(R.dot(Lambda_V))/std::pow(r,5);
     output(10)=-Lambda_R(0);
     output(11)=-Lambda_R(1);
     output(12)=-Lambda_R(2);
@@ -214,6 +218,11 @@ void IndirectMethod::propagate(){
     delV_f=delV_f.cwiseAbs();
 
     fitness=delR_f.sum()+delV_f.sum();
+    if (std::isnan(fitness)==1)
+    {
+        fitness=1000;
+    }
+    
 }
 
 void IndirectMethod::save(std::string name){
@@ -267,11 +276,29 @@ void IndirectMethod::save(std::string name){
     Matrice.col(Matrice.cols()-1)=time.transpose();
     std::ofstream theFile;
     theFile.open(name + "_file.csv");
-    theFile << "Earth Radius:," << REt0.format(csv) << std::endl;
-    theFile << "Earth Velocity:," << VEt0.format(csv) << std::endl;
-    theFile << "Radius_1, Radius_2, Radius_3, Velocity_1, Velocity_2, Velocity_3, Mass, Adjoint Variables..." << std::endl;
+    theFile << "Radius_1, Radius_2, Radius_3, Velocity_1, Velocity_2, Velocity_3, Mass, ARadius_1, ARadius_2, ARadius_3, AVelocity_1, AVelocity_2, AVelocity_3, AMass, Time" << std::endl;
     theFile << Matrice.format(csv)<< std::endl<< std::endl<< std::endl;
-    theFile << "Mars Radius:," << RMtf.format(csv) << std::endl;
-    theFile << "Mars Velocity:," << VMtf.format(csv) << std::endl;
+    theFile << REt0.transpose().format(csv) << std::endl;
+    theFile << VEt0.transpose().format(csv) << std::endl;
+    theFile << RMtf.transpose().format(csv) << std::endl;
+    theFile << VMtf.transpose().format(csv) << std::endl;
     theFile.close();
+}
+void IndirectMethod::print(std::string value){
+    if (value.compare("Vinf")==0)
+    {
+        std::cout<<"Vinf Magnitude"<<v_inf_0<<std::endl;
+        std::cout<<"Vinf Vector"<<V_inf_0.transpose()/V_inf_0.norm()<<std::endl;
+    }
+    else if (value.compare("VEt0")==0)
+    {
+        std::cout<<"VEt0 Vector"<<VEt0.transpose()/VEt0.norm()<<std::endl;
+    }
+    else if (value.compare("all scalars")==0){
+        std::cout<<"m0"<<m0<<std::endl;
+        std::cout<<"mLEO"<<mLEO<<std::endl;
+        std::cout<<"ve"<<ve<<std::endl;
+        std::cout<<"vc"<<vc<<std::endl;
+        std::cout<<"Delta V"<<del_v<<std::endl;
+    }
 }

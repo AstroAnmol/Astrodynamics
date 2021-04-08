@@ -20,8 +20,8 @@ class GA{
         double m0_up=1;
         double lambdaR0_lb=-2;
         double lambdaR0_ub=2;
-        double vinf_lp=-0.025;
-        double vinf_up=0.025;
+        double vinf_lp=-0.025;//8.3936E-4;
+        double vinf_up=0.025;//8.3936E-4;
 
         double BestFitness;
         Eigen::VectorXd BestGene;

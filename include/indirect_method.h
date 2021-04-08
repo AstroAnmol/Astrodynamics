@@ -13,6 +13,8 @@ class IndirectMethod{
         void propagate();//
         // to save the propagated trajectory
         void save(std::string name);
+        // print some values
+        void print(std::string value);
         // void set_GAparam(Eigen::VectorXd param);
     private:
         //Eigen::VectorXd GAparam; //t0, m0, V_inf_0_x, V_inf_0_y, Lambda_R0, tf
@@ -34,6 +36,7 @@ class IndirectMethod{
         const double c_dash=0.0955;
         const double epsilon=0.06;
 
+        
         //orbit mars
         Eigen::Vector3d RM0, VM0; // Mars vector on 01/01/2000
         orbit Mars;

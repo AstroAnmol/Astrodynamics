@@ -27,7 +27,7 @@ Eigen::Vector3i top3(Eigen::VectorXd a){
 
 //random number generator
 double fRand(double fMin, double fMax){
-    srand(time(0));   
+    //srand(time(0));   %was making search space go wrong
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
@@ -68,9 +68,7 @@ GA::GA(){
         IndirectMethod DM(Pop_param);
         FirstGen_fitness(i)=DM.getFitness();
     }
-    
     //GA operators for each generation
-
     Eigen::ArrayXXd ithGen_param(8,pop_size);
     Eigen::VectorXd ithGen_fitness(pop_size);
 
