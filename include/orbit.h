@@ -9,6 +9,7 @@ class orbit{
 		void print_OE();
 		void set_cartesian(Eigen::Vector3d r, Eigen::Vector3d v);
 		void set_thrust(double aT);
+		// 0 for Earth, 1 for Sun, 2 for dimensionless
 		void set_mu(int i);
 		void print_cartesian();
 		void print_perifocal();
@@ -16,7 +17,7 @@ class orbit{
 		//get functions
 		double get_TimePeriod();
 		Eigen::VectorXd get_cartesian();
-		// OE $ cartesion conversions
+		// OE & cartesion conversions
 		void OE_to_cartesian();
 		void cartesian_to_OE();
 		//propagate 2 body problem function (step size, final time, 

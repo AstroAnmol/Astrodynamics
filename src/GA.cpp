@@ -31,7 +31,7 @@ double fRand(double fMin, double fMax){
     double f = (double)rand() / RAND_MAX;
     return fMin + f * (fMax - fMin);
 }
-
+//
 //Crossover Probabity
 double beta_dash(double u){
     if (u<=0.5){
@@ -68,6 +68,7 @@ GA::GA(){
         IndirectMethod DM(Pop_param);
         FirstGen_fitness(i)=DM.getFitness();
     }
+
     //GA operators for each generation
     Eigen::ArrayXXd ithGen_param(8,pop_size);
     Eigen::VectorXd ithGen_fitness(pop_size);

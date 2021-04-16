@@ -36,8 +36,8 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
 
     //Setting Mars orbit
     // Initial orbit parameters taken from JPL HORIZONS in KM/S
-    RM0<< 2.069270543147017e+08, -3.560689745239088E+06, -5.147936537447235e+06;
-    VM0<< 1.304308833322233e+00, 2.628158890420931e+01, 5.188465740839767e-01;
+    RM0<< 2.079950549908331E+08, -3.143009561106971E+06, -5.178781160069674E+06;
+    VM0<< 1.295003532851602E+00, 2.629442067068712E+01, 5.190097267545717E-01;
     Mars.set_mu(1);
     Mars.set_cartesian(RM0, VM0);
     Eigen::VectorXd RVM(6);
@@ -47,8 +47,8 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
 
     //Setting Earth orbit
     // Initial orbit parameters taken from JPL HORIZONS in KM/S
-    RE0<<-2.627892928682480e+07, 1.445102393586391e+08, 3.022818135935813e+04;
-    VE0<<-2.983052803283506e+01, -5.220465685407924e+00, -1.014621798034465e-04;
+    RE0<<-2.521092855899356E+07, 1.449279195838006E+08, -6.164165719002485E+02;
+    VE0<<-2.983983333677879E+01, -5.207633902410673E+00, 6.168441184239981E-05;
     Earth.set_mu(1);
     Earth.set_cartesian(RE0,VE0);
     Eigen::VectorXd RVE(6);
@@ -157,9 +157,9 @@ Eigen::VectorXd IndirectMethod::differential(Eigen::VectorXd x){//x is R,V,m,Lam
     output(4)=-R(1)/std::pow(r,3) + T(1)/m;
     output(5)=-R(2)/std::pow(r,3) + T(2)/m;
     output(6)=-t/c;
-    output(7)=Lambda_V(0)/std::pow(r,3) - 3*R(0)*(R.dot(Lambda_V))/std::pow(r,5);
-    output(8)=Lambda_V(1)/std::pow(r,3) - 3*R(1)*(R.dot(Lambda_V))/std::pow(r,5);
-    output(9)=Lambda_V(2)/std::pow(r,3) - 3*R(2)*(R.dot(Lambda_V))/std::pow(r,5);
+    output(7)=(Lambda_V(0)/std::pow(r,3) - 3*R(0)*(R.dot(Lambda_V))/std::pow(r,5));
+    output(8)=(Lambda_V(1)/std::pow(r,3) - 3*R(1)*(R.dot(Lambda_V))/std::pow(r,5));
+    output(9)=(Lambda_V(2)/std::pow(r,3) - 3*R(2)*(R.dot(Lambda_V))/std::pow(r,5));
     output(10)=-Lambda_R(0);
     output(11)=-Lambda_R(1);
     output(12)=-Lambda_R(2);
@@ -171,7 +171,7 @@ void IndirectMethod::propagate(){
     int t=0;
     double step=0.01;
     //number of steps
-    int noi=tf/step;
+    int noi=(tf-t0)/step;
 
     Eigen::ArrayXXd x_propagated(14,noi+1);
     
@@ -218,6 +218,7 @@ void IndirectMethod::propagate(){
     delV_f=delV_f.cwiseAbs();
 
     fitness=delR_f.sum()+delV_f.sum();
+
     if (std::isnan(fitness)==1)
     {
         fitness=1000;
@@ -229,11 +230,12 @@ void IndirectMethod::save(std::string name){
     int t=0;
     double step=0.01;
     //number of steps
-    int noi=tf/step;
+    int noi=(tf-t0)/step;
 
     Eigen::ArrayXXd x_propagated(14,noi+1);
     
     Eigen::ArrayXXd time(1,noi+1);
+    Eigen::ArrayXXd th(1,noi+1);
 
     Eigen::ArrayXXd k1(14,1);
     Eigen::ArrayXXd k2(14,1);
@@ -253,6 +255,7 @@ void IndirectMethod::save(std::string name){
     // setting initial values
     x_propagated.col(0)=x0;
     time.col(0)=0;
+    th.col(0)=0;
     while (t<noi){
         //RK4 Integrator
         k1= step*differential(x_propagated.col(t));
@@ -260,7 +263,8 @@ void IndirectMethod::save(std::string name){
         k3= step*differential(x_propagated.col(t) + k2/2);
         k4= step*differential(x_propagated.col(t) + k3);
         x_propagated.col(t+1)= x_propagated.col(t)+(k1+2*k2+2*k3+k4)/6;
-
+        // store thrust
+        th.col(0)=Thrust(x_propagated.col(t)).norm();
         //Increasing Time Step
         t++;
         //set time
@@ -272,11 +276,12 @@ void IndirectMethod::save(std::string name){
     // Matrix of all data
     Eigen::ArrayXXd Matrice(noi+1,14);
     Matrice=x_propagated.transpose();
-    Matrice.conservativeResize(Matrice.rows(),Matrice.cols()+1);
+    Matrice.conservativeResize(Matrice.rows(),Matrice.cols()+2);
+    Matrice.col(Matrice.cols()-2)=th.transpose();
     Matrice.col(Matrice.cols()-1)=time.transpose();
     std::ofstream theFile;
     theFile.open(name + "_file.csv");
-    theFile << "Radius_1, Radius_2, Radius_3, Velocity_1, Velocity_2, Velocity_3, Mass, ARadius_1, ARadius_2, ARadius_3, AVelocity_1, AVelocity_2, AVelocity_3, AMass, Time" << std::endl;
+    theFile << "Radius_1,Radius_2,Radius_3,Velocity_1,Velocity_2,Velocity_3,Mass,ARadius_1,ARadius_2,ARadius_3,AVelocity_1,AVelocity_2,AVelocity_3,AMass,Thrust,Time" << std::endl;
     theFile << Matrice.format(csv)<< std::endl<< std::endl<< std::endl;
     theFile << REt0.transpose().format(csv) << std::endl;
     theFile << VEt0.transpose().format(csv) << std::endl;

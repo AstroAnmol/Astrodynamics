@@ -24,6 +24,7 @@ int main(){
         Trial.print("VEt0");
         Trial.print("Vinf");
         Trial.print("all scalars");
+        Trial.save("Try");
         */
         
         for (int i = 0; i < 10; i++)
@@ -39,6 +40,5 @@ int main(){
             oss << "Trial_" << i;
             name=oss.str();
             Best.save(name);
-        }
-        
+        }      
 }
