@@ -27,7 +27,7 @@ int main(){
         Trial.save("Try");
         */
         
-        for (int i = 0; i < 10; i++)
+        for (int i = 2; i < 8; i++)
         {
             GA trial1;
             Eigen::VectorXd BestGeneT1;
@@ -37,7 +37,7 @@ int main(){
             IndirectMethod Best(BestGeneT1);
             std::string name;
             std::ostringstream oss;
-            oss << "Trial_" << i;
+            oss << "DirectMars_" << i;
             name=oss.str();
             Best.save(name);
         }      
