@@ -11,8 +11,8 @@
 #include <random>
 #include "orbit.h"
 #include "cr3bp.h"
-#include "indirect_method.h"
-#include "GA.h"
+#include "Indirect_BVP_DM.h"
+#include "Genetic_DM.h"
 
 
 int main(){
@@ -29,12 +29,12 @@ int main(){
         
         for (int i = 2; i < 8; i++)
         {
-            GA trial1;
+            Genetic_DM trial1;
             Eigen::VectorXd BestGeneT1;
             BestGeneT1=trial1.get_BestGene();;
             std::cout<<BestGeneT1.transpose()<<std::endl;
             std::cout<<trial1.get_BestFitness()<<std::endl;
-            IndirectMethod Best(BestGeneT1);
+            Indirect_BVP_DM Best(BestGeneT1);
             std::string name;
             std::ostringstream oss;
             oss << "DirectMars_" << i;

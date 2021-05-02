@@ -3,15 +3,15 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-#include "indirect_method.h"
+#include "Indirect_BVP_DM.h"
 #include "orbit.h"
 
 //default constructor
-/* IndirectMethod::IndirectMethod(){
+/* Indirect_BVP_DM::Indirect_BVP_DM(){
 
 } */
 //constructor
-IndirectMethod::IndirectMethod(Eigen::VectorXd param){
+Indirect_BVP_DM::Indirect_BVP_DM(Eigen::VectorXd param){
     //GAparam=param;
     t0=param(0);
     m0=param(1);
@@ -93,11 +93,11 @@ IndirectMethod::IndirectMethod(Eigen::VectorXd param){
     propagate();
 }
 
-double IndirectMethod::getFitness(){
+double Indirect_BVP_DM::getFitness(){
     return fitness;
 }
 
-Eigen::Vector3d IndirectMethod::Thrust(Eigen::VectorXd x){//x is R,V,m,Lambda_R, Lambda_V, lambda_m
+Eigen::Vector3d Indirect_BVP_DM::Thrust(Eigen::VectorXd x){//x is R,V,m,Lambda_R, Lambda_V, lambda_m
     Eigen::Vector3d R, V, Lambda_R, Lambda_V;
     double m, lambda_m;
 
@@ -128,7 +128,7 @@ Eigen::Vector3d IndirectMethod::Thrust(Eigen::VectorXd x){//x is R,V,m,Lambda_R,
     return T_out;
 }
 
-Eigen::VectorXd IndirectMethod::differential(Eigen::VectorXd x){//x is R,V,m,Lambda_R, Lambda_V, lambda_m
+Eigen::VectorXd Indirect_BVP_DM::differential(Eigen::VectorXd x){//x is R,V,m,Lambda_R, Lambda_V, lambda_m
     Eigen::Vector3d R, V, Lambda_R, Lambda_V;
     double m, lambda_m;
 
@@ -167,7 +167,7 @@ Eigen::VectorXd IndirectMethod::differential(Eigen::VectorXd x){//x is R,V,m,Lam
     return output;
 }
 
-void IndirectMethod::propagate(){
+void Indirect_BVP_DM::propagate(){
     int t=0;
     double step=0.01;
     //number of steps
@@ -226,7 +226,7 @@ void IndirectMethod::propagate(){
     
 }
 
-void IndirectMethod::save(std::string name){
+void Indirect_BVP_DM::save(std::string name){
     int t=0;
     double step=0.01;
     //number of steps
@@ -289,7 +289,7 @@ void IndirectMethod::save(std::string name){
     theFile << VMtf.transpose().format(csv) << std::endl;
     theFile.close();
 }
-void IndirectMethod::print(std::string value){
+void Indirect_BVP_DM::print(std::string value){
     if (value.compare("Vinf")==0)
     {
         std::cout<<"Vinf Magnitude"<<v_inf_0<<std::endl;

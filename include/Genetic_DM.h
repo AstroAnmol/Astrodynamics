@@ -1,12 +1,12 @@
-#ifndef GA_H
-#define GA_H
+#ifndef Genetic_DM_H
+#define Genetic_DM_H
 #include <eigen-3.3.7/Eigen/Dense>
 #include "orbit.h"
 #include "indirect_method.h"
 
-class GA{
+class Genetic_DM{
     public:
-        GA();
+        Genetic_DM();
         double get_BestFitness();
         Eigen::VectorXd get_BestGene();
     private:

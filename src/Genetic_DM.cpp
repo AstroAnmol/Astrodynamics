@@ -6,8 +6,8 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-#include "GA.h"
-#include "indirect_method.h"
+#include "Genetic_DM.h"
+#include "Indirect_BVP_DM.h"
 #include "orbit.h"
 
 Eigen::Vector3i top3(Eigen::VectorXd a){
@@ -42,7 +42,7 @@ double beta_dash(double u){
     }
 }
 
-GA::GA(){
+Genetic_DM::Genetic_DM(){
     
     Eigen::ArrayXXd FirstGen_param(8,pop_size);
     Eigen::VectorXd FirstGen_fitness(pop_size);
@@ -65,7 +65,7 @@ GA::GA(){
         FirstGen_param(7,i)=fRand(tf_lb,tf_up);
         Eigen::VectorXd Pop_param;
         Pop_param=FirstGen_param.col(i);
-        IndirectMethod DM(Pop_param);
+        Indirect_BVP_DM DM(Pop_param);
         FirstGen_fitness(i)=DM.getFitness();
     }
 
@@ -150,8 +150,8 @@ GA::GA(){
             Eigen::VectorXd Pop_param1, Pop_param2;
             Pop_param1=i1thGen_param.col(k);
             Pop_param2=i1thGen_param.col(k+pop_size/2);
-            IndirectMethod DM1(Pop_param1);
-            IndirectMethod DM2(Pop_param2);
+            Indirect_BVP_DM DM1(Pop_param1);
+            Indirect_BVP_DM DM2(Pop_param2);
             i1thGen_fitness(k)=DM1.getFitness();
             i1thGen_fitness(k+pop_size/2)=DM2.getFitness();
         } 
@@ -203,7 +203,7 @@ GA::GA(){
             if (check!=0){
                 Eigen::VectorXd Pop_param3;
                 Pop_param3=i1thGen_param.col(k);
-                IndirectMethod DM3(Pop_param3);
+                Indirect_BVP_DM DM3(Pop_param3);
                 i1thGen_fitness(k)=DM3.getFitness();
             }
         }
@@ -226,9 +226,9 @@ GA::GA(){
     BestGene=ithGen_param.col(min_index);
 }
 
-double GA::get_BestFitness(){
+double Genetic_DM::get_BestFitness(){
     return BestFitness;
 }
-Eigen::VectorXd GA::get_BestGene(){
+Eigen::VectorXd Genetic_DM::get_BestGene(){
     return BestGene;
 }

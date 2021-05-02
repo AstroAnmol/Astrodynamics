@@ -1,12 +1,12 @@
-#ifndef IND_H
-#define IND_H
+#ifndef IND_DM_H
+#define IND_DM_H
 #include <eigen-3.3.7/Eigen/Dense>
 #include "orbit.h"
 
-class IndirectMethod{
+class Indirect_BVP_DM{
     public:
-        /* IndirectMethod(); */
-        IndirectMethod(Eigen::VectorXd param);
+        /* Indirect_BVP_DM(); */
+        Indirect_BVP_DM(Eigen::VectorXd param);
         double getFitness();
         Eigen::Vector3d Thrust(Eigen::VectorXd x);//x is R,V,m,Lambda_R, Lambda_V, lambda_m        
         Eigen::VectorXd differential(Eigen::VectorXd x);//x is R,V,m,Lambda_R, Lambda_V, lambda_m
