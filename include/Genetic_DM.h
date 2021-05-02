@@ -1,8 +1,6 @@
 #ifndef Genetic_DM_H
 #define Genetic_DM_H
 #include <eigen-3.3.7/Eigen/Dense>
-#include "orbit.h"
-#include "indirect_method.h"
 
 class Genetic_DM{
     public:
