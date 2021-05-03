@@ -47,11 +47,11 @@ class orbit{
 		Eigen::Matrix3d Rctop;
 		Eigen::Matrix3d Rptoc;
 		//gravitational parameters
-		const double mu_E=398600.4; //km^3/s^2
-		const double J2_E=0.00108248; 
-		const double mu_S=132712440018; //km^3/s^2
-		const double mu_dimensionless=1; 
-		const double RE=6371; //km
+		double mu_E=398600.4; //km^3/s^2
+		double J2_E=0.00108248; 
+		double mu_S=132712440018; //km^3/s^2
+		double mu_dimensionless=1; 
+		double RE=6371; //km
 		double mu=mu_E;
 		//Private function to covert any cartesian coordinates to Orbital Elements
 		Eigen::ArrayXXd cartesian_to_OE_I(Eigen::Vector3d x, Eigen::Vector3d y);
