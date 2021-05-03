@@ -8,8 +8,8 @@ class Genetic_DM{
         double get_BestFitness();
         Eigen::VectorXd get_BestGene();
     private:
-        const int noi=50; // number of iterations
-        const int pop_size=100; // population size
+        int noi=50; // number of iterations
+        int pop_size=100; // population size
         double t0_lb=58;
         double t0_up=59;
         double tf_lb=73;
