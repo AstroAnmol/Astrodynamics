@@ -165,7 +165,7 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
     Lambda_V0=V_inf_0*(m0+epsilon)*lambda_m0/(c_dash*(std::sqrt(std::pow(V_inf_0.norm(),2)+std::pow(ve,2))));
 
     // stacked state and adjoint vector
-    Eigen::VectorXd x0, xGA1_i;
+    
     x0=Eigen::VectorXd::Zero(14);
 
     x0.block(0,0,3,1)=R0;
@@ -212,7 +212,6 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
         lambda_mGA1_f=lambda_mGA1_i;
     
     // stacked state and adjoint vector
-    Eigen::VectorXd xGA1_f, xGA2_i;
     xGA1_f=Eigen::VectorXd::Zero(14);
     xGA1_f.block(0,0,3,1)=RGA1_f;
     xGA1_f.block(3,0,3,1)=VGA1_f;
@@ -267,7 +266,6 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
         fitness= fitness + abs(error);
     
     // stacked state and adjoint vector
-    Eigen::VectorXd xGA2_f, xf;
     xGA2_f=Eigen::VectorXd::Zero(14);
     xGA2_f.block(0,0,3,1)=RGA2_f;
     xGA2_f.block(3,0,3,1)=VGA2_f;
@@ -411,13 +409,15 @@ Eigen::VectorXd Indirect_BVP_GA::propagate(Eigen::VectorXd x0, double ti, double
     return xf;
 }
 
-void Indirect_BVP_GA::save(std::string name){
+// propagate initial vector x0 from initial time ti to final time tf for saving.
+void Indirect_BVP_GA::propagate_save(Eigen::VectorXd x0, double ti, double tf, std::string name){
     int t=0;
     double step=0.01;
     //number of steps
-    int noi=(tf-t0)/step;
+    int noi=(tf-ti)/step;
 
     Eigen::ArrayXXd x_propagated(14,noi+1);
+    
     
     Eigen::ArrayXXd time(1,noi+1);
     Eigen::ArrayXXd th(1,noi+1);
@@ -427,20 +427,9 @@ void Indirect_BVP_GA::save(std::string name){
     Eigen::ArrayXXd k3(14,1);
     Eigen::ArrayXXd k4(14,1);
 
-    Eigen::VectorXd x0;
-    x0=Eigen::VectorXd::Zero(14);
-
-    x0.block(0,0,3,1)=R0;
-    x0.block(3,0,3,1)=V0;
-    x0(6)=m0;
-    x0.block(7,0,3,1)=Lambda_R0;
-    x0.block(10,0,3,1)=Lambda_V0;
-    x0(13)=lambda_m0;
-
     // setting initial values
     x_propagated.col(0)=x0;
     time.col(0)=0;
-    th.col(0)=0;
     while (t<noi){
         //RK4 Integrator
         k1= step*differential(x_propagated.col(t));
@@ -448,8 +437,7 @@ void Indirect_BVP_GA::save(std::string name){
         k3= step*differential(x_propagated.col(t) + k2/2);
         k4= step*differential(x_propagated.col(t) + k3);
         x_propagated.col(t+1)= x_propagated.col(t)+(k1+2*k2+2*k3+k4)/6;
-        // store thrust
-        th.col(0)=Thrust(x_propagated.col(t)).norm();
+
         //Increasing Time Step
         t++;
         //set time
@@ -465,10 +453,16 @@ void Indirect_BVP_GA::save(std::string name){
     Matrice.col(Matrice.cols()-2)=th.transpose();
     Matrice.col(Matrice.cols()-1)=time.transpose();
     std::ofstream theFile;
-    theFile.open(name + "_file.csv");
+    theFile.open(name + "_file.csv" , std::ios::out | std::ios::app);
     theFile << "Position_1,Position_2,Position_3,Velocity_1,Velocity_2,Velocity_3,Mass,APosition_1,APosition_2,APosition_3,AVelocity_1,AVelocity_2,AVelocity_3,AMass,Thrust,Time" << std::endl;
     theFile << Matrice.format(csv)<< std::endl<< std::endl<< std::endl;
     theFile.close();
+}
+
+void Indirect_BVP_GA::save(std::string name){
+    propagate_save(x0, t0, tGA1, name);
+    propagate_save(xGA1_f, tGA1, tGA2, name);
+    propagate_save(xGA2_f, tGA2, tf, name);
 }
 void Indirect_BVP_GA::print(std::string value){
     if (value.compare("Vinf")==0)

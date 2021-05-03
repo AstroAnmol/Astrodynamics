@@ -11,6 +11,7 @@ class Indirect_BVP_GA{
         Eigen::Vector3d Thrust(Eigen::VectorXd x);//x is R,V,m,Lambda_R, Lambda_V, lambda_m        
         Eigen::VectorXd differential(Eigen::VectorXd x);//x is R,V,m,Lambda_R, Lambda_V, lambda_m
         Eigen::VectorXd propagate(Eigen::VectorXd x0, double ti, double tf);//
+        void propagate_save(Eigen::VectorXd x0, double ti, double tf, std::string name);//
         // to save the propagated trajectory
         void save(std::string name);
         // print some values
@@ -34,7 +35,11 @@ class Indirect_BVP_GA{
         Eigen::Vector3d RGA2_i, VGA2_i, Lambda_RGA2_i, Lambda_VGA2_i;
         Eigen::Vector3d RGA2_f, VGA2_f, Lambda_RGA2_f, Lambda_VGA2_f;
         Eigen::Vector3d Rf, Vf, Lambda_Rf, Lambda_Vf;
-        //Eigen::VectorXd x0;
+        
+        // stacked state and adjoint vectors
+        Eigen::VectorXd x0, xGA1_i;
+        Eigen::VectorXd xGA1_f, xGA2_i;
+        Eigen::VectorXd xGA2_f, xf;
 
         // Escape Velocity (Origin 200 km orbit)
         // Circular orbit Velocity (Origin 200 km orbit)
