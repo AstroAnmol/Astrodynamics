@@ -454,12 +454,15 @@ void Indirect_BVP_GA::propagate_save(Eigen::VectorXd x0, double ti, double tf, s
     Matrice.col(Matrice.cols()-1)=time.transpose();
     std::ofstream theFile;
     theFile.open(name + "_file.csv" , std::ios::out | std::ios::app);
-    theFile << "Position_1,Position_2,Position_3,Velocity_1,Velocity_2,Velocity_3,Mass,APosition_1,APosition_2,APosition_3,AVelocity_1,AVelocity_2,AVelocity_3,AMass,Thrust,Time" << std::endl;
-    theFile << Matrice.format(csv)<< std::endl<< std::endl<< std::endl;
+    // theFile << "Position_1,Position_2,Position_3,Velocity_1,Velocity_2,Velocity_3,Mass,APosition_1,APosition_2,APosition_3,AVelocity_1,AVelocity_2,AVelocity_3,AMass,Thrust,Time" << std::endl;
+    theFile << Matrice.format(csv)<< std::endl;
     theFile.close();
 }
 
 void Indirect_BVP_GA::save(std::string name){
+    std::ofstream theFile;
+    theFile.open(name + "_file.csv" , std::ios::out | std::ios::app);
+    theFile << "Position_1,Position_2,Position_3,Velocity_1,Velocity_2,Velocity_3,Mass,APosition_1,APosition_2,APosition_3,AVelocity_1,AVelocity_2,AVelocity_3,AMass,Thrust,Time" << std::endl;
     propagate_save(x0, t0, tGA1, name);
     propagate_save(xGA1_f, tGA1, tGA2, name);
     propagate_save(xGA2_f, tGA2, tf, name);
