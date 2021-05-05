@@ -190,13 +190,6 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
     Lambda_RGA1_i=xGA1_i.block(7,0,3,1);
     Lambda_VGA1_i=xGA1_i.block(10,0,3,1);
     lambda_mGA1_i=xGA1_i(13);
-
-    // Check for constraints
-        // RGA1_i==RGA1
-        Eigen::Vector3d delR_GA1_i;
-        delR_GA1_i=RGA1_i-RGA1;
-        delR_GA1_i=delR_GA1_i.cwiseAbs();
-        fitness=fitness+delR_GA1_i.sum();
     
     // Apply Boundary conditions for next section of Heliocentric Trajectory
     // Defining Position vectors
@@ -218,6 +211,18 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
         mGA1_f=mGA1_i;
         lambda_mGA1_f=lambda_mGA1_i;
     
+    // Check for constraints
+        // RGA1_i==RGA1
+        Eigen::Vector3d delR_GA1_i;
+        delR_GA1_i=RGA1_i-RGA1;
+        delR_GA1_i=delR_GA1_i.cwiseAbs();
+        fitness=fitness+delR_GA1_i.sum();
+        // Lambda_VGA1_i || V inf_GA1_i
+        Eigen::Vector3d Lambda_VGA1_error;
+        Lambda_VGA1_error=Lambda_VGA1_i/Lambda_VGA1_i.norm() - V_inf_GA1_i/V_inf_GA1_i.norm();
+        Lambda_VGA1_error=Lambda_VGA1_error.cwiseAbs();
+        fitness=fitness+Lambda_VGA1_error.sum();
+
     // stacked state and adjoint vector
     xGA1_f=Eigen::VectorXd::Zero(14);
     xGA1_f.block(0,0,3,1)=RGA1_f;
@@ -280,10 +285,45 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
         double cos_phi, cos_2phi;
         cos_phi=vp*vp/(v_inf_GA2_i*v_inf_GA2_i + vp*vp);
         cos_2phi=2*cos_phi*cos_phi - 1;
-        double error;
-        error= V_inf_GA2_f.dot(V_inf_GA2_i) + cos_2phi*v_inf_GA2_i*v_inf_GA2_i;
-        fitness= fitness + std::abs(error);
-    
+        double turn_angle_error;
+        turn_angle_error= V_inf_GA2_f.dot(V_inf_GA2_i) + cos_2phi*v_inf_GA2_i*v_inf_GA2_i;
+        fitness= fitness + std::abs(turn_angle_error);
+        
+    //LambdaV_GA2_i and //LambdaV_GA2_2 constraits
+        //In plane constraint
+        Eigen::Vector3d GA2_plane_normal, Lambda_VGA2_i_out, Lambda_VGA2_f_out;
+        GA2_plane_normal=V_inf_GA2_i.cross(V_inf_GA2_f/v_inf_GA2_f)/v_inf_GA2_i;
+        //inital adjoint velocity
+        Lambda_VGA2_i_out=Lambda_VGA2_i.dot(GA2_plane_normal)*GA2_plane_normal;
+        fitness=fitness + std::abs(Lambda_VGA2_i.dot(GA2_plane_normal));
+        //final adjoint velocity
+        Lambda_VGA2_f_out=Lambda_VGA2_f.dot(GA2_plane_normal)*GA2_plane_normal;
+        fitness=fitness + std::abs(Lambda_VGA2_f.dot(GA2_plane_normal));
+
+        //perp and parallel components (initial)
+        Eigen::Vector3d Lambda_VGA2_i_perp, Lambda_VGA2_i_paral;
+        Lambda_VGA2_i_paral=Lambda_VGA2_i.dot(V_inf_GA2_i/v_inf_GA2_i)*V_inf_GA2_i/v_inf_GA2_i;
+        Lambda_VGA2_i_perp=Lambda_VGA2_i-Lambda_VGA2_i_out-Lambda_VGA2_i_paral;
+        //perp and parallel components (final)
+        Eigen::Vector3d Lambda_VGA2_f_perp, Lambda_VGA2_f_paral;
+        Lambda_VGA2_f_paral=Lambda_VGA2_f.dot(V_inf_GA2_f/v_inf_GA2_f)*V_inf_GA2_f/v_inf_GA2_f;
+        Lambda_VGA2_f_perp=Lambda_VGA2_f-Lambda_VGA2_f_out-Lambda_VGA2_f_paral;
+        //constraints
+        //perp component constant
+        fitness=fitness + std::abs(Lambda_VGA2_i_perp.norm()-Lambda_VGA2_f_perp.norm());
+        //paral component
+        double A, phi, V_inf_GA2_i_sq;
+        V_inf_GA2_i_sq=V_inf_GA2_i.dot(V_inf_GA2_i);
+        phi=std::acos(cos_phi);
+        A=(2.0/std::tan(phi))*(V_inf_GA2_i_sq/(V_inf_GA2_i_sq + vp*vp));
+        double lambdaV_GA2_paral_error;
+        lambdaV_GA2_paral_error=Lambda_VGA2_f_paral.norm()-Lambda_VGA2_i_paral.norm();
+        lambdaV_GA2_paral_error=lambdaV_GA2_paral_error-2*A*Lambda_VGA2_i_perp.norm();
+        fitness=fitness + std::abs(lambdaV_GA2_paral_error);
+        
+
+
+
     // stacked state and adjoint vector
     xGA2_f=Eigen::VectorXd::Zero(14);
     xGA2_f.block(0,0,3,1)=RGA2_f;
