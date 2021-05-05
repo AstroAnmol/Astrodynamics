@@ -12,18 +12,70 @@
 
 Genetic_GA::Genetic_GA(std::string seq){
     
-    Eigen::ArrayXXd FirstGen_param(23,pop_size);
+    Eigen::ArrayXXd FirstGen_param(24,pop_size);
     Eigen::VectorXd FirstGen_fitness(pop_size);
     
-    Eigen::VectorXd UpperBound(23);
-    Eigen::VectorXd LowerBound(23);
+    Eigen::VectorXd UpperBound(24);
+    Eigen::VectorXd LowerBound(24);
+    LowerBound(0)=t0_lb;
+    LowerBound(1)=m0_lb;
+    LowerBound(2)=vinf_dep_lp;
+    LowerBound(3)=vinf_dep_lp;
+    LowerBound(4)=lambdaR0_lb;
+    LowerBound(5)=lambdaR0_lb;
+    LowerBound(6)=lambdaR0_lb;
+    // First Gravity Assist Parameters
+    LowerBound(7)=tGA1_lb;
+    LowerBound(8)=vinf_GA_lp;
+    LowerBound(9)=vinf_GA_lp;
+    LowerBound(10)=lambdaR0_lb;
+    LowerBound(11)=lambdaR0_lb;
+    LowerBound(12)=lambdaR0_lb;
+    // Second Gravity Assist Parameters (with minimum height constraint)
+    LowerBound(13)=tGA2_lb;
+    LowerBound(14)=vinf_GA_lp;
+    LowerBound(15)=vinf_GA_lp;
+    LowerBound(16)=lambdaR0_lb;
+    LowerBound(17)=lambdaR0_lb;
+    LowerBound(18)=lambdaR0_lb;
+    LowerBound(19)=lambdaR0_lb;
+    LowerBound(20)=lambdaR0_lb;
+    LowerBound(21)=lambdaR0_lb;
+    // Destination/ Final Parameters
+    LowerBound(22)=tf_lb;
+    LowerBound(23)=tstar_lb;
 
-    UpperBound<< t0_up, m0_up, vinf_up, vinf_up, lambdaR0_ub, lambdaR0_ub, lambdaR0_ub, tf_up;
-    LowerBound<< t0_lb, m0_lb, vinf_lp, vinf_lp, lambdaR0_lb, lambdaR0_lb, lambdaR0_lb, tf_lb;
+    UpperBound(0)=t0_lb;
+    UpperBound(1)=m0_lb;
+    UpperBound(2)=vinf_dep_lp;
+    UpperBound(3)=vinf_dep_lp;
+    UpperBound(4)=lambdaR0_lb;
+    UpperBound(5)=lambdaR0_lb;
+    UpperBound(6)=lambdaR0_lb;
+    // First Gravity Assist Parameters
+    UpperBound(7)=tGA1_lb;
+    UpperBound(8)=vinf_GA_lp;
+    UpperBound(9)=vinf_GA_lp;
+    UpperBound(10)=lambdaR0_lb;
+    UpperBound(11)=lambdaR0_lb;
+    UpperBound(12)=lambdaR0_lb;
+    // Second Gravity Assist Parameters (with minimum height constraint)
+    UpperBound(13)=tGA2_lb;
+    UpperBound(14)=vinf_GA_lp;
+    UpperBound(15)=vinf_GA_lp;
+    UpperBound(16)=lambdaR0_lb;
+    UpperBound(17)=lambdaR0_lb;
+    UpperBound(18)=lambdaR0_lb;
+    UpperBound(19)=lambdaR0_lb;
+    UpperBound(20)=lambdaR0_lb;
+    UpperBound(21)=lambdaR0_lb;
+    // Destination/ Final Parameters
+    UpperBound(22)=tf_lb;
+    UpperBound(23)=tstar_lb;
 
     //intialise first generation
     for (int i = 0; i < pop_size; i++){
-        for (int j = 0; j < 23; i++){
+        for (int j = 0; j < 24; i++){
             FirstGen_param(j,i)=fRand(LowerBound(j),UpperBound(j));
         }
         Eigen::VectorXd Pop_param;
@@ -33,13 +85,13 @@ Genetic_GA::Genetic_GA(std::string seq){
     }
 
     //GA operators for each generation
-    Eigen::ArrayXXd ithGen_param(23,pop_size);
+    Eigen::ArrayXXd ithGen_param(24,pop_size);
     Eigen::VectorXd ithGen_fitness(pop_size);
 
-    Eigen::ArrayXXd ParentGen_param(23,pop_size);
+    Eigen::ArrayXXd ParentGen_param(24,pop_size);
     Eigen::VectorXd ParentGen_fitness(pop_size);
 
-    Eigen::ArrayXXd i1thGen_param(23,pop_size);
+    Eigen::ArrayXXd i1thGen_param(24,pop_size);
     Eigen::VectorXd i1thGen_fitness(pop_size);
 
     //array for keeping track of pairings
@@ -87,7 +139,7 @@ Genetic_GA::Genetic_GA(std::string seq){
         //Crossover
         std::shuffle(pairings.begin(),pairings.end(),std::default_random_engine(seed));
         for (int k = 0; k < pop_size/2; k++){
-            for (int j = 0; j < 23; j++){
+            for (int j = 0; j < 24; j++){
                 double u=fRand(0,1);
                 double beta;
                 beta=beta_dash(u);
@@ -124,7 +176,7 @@ Genetic_GA::Genetic_GA(std::string seq){
         for (int k = 0; k < pop_size; k++){
             double mut_prob;
             int check=0;
-            for (int j = 0; j < 23; j++){
+            for (int j = 0; j < 24; j++){
                 mut_prob=fRand(0,100);
                 if(mut_prob<1){
                     i1thGen_param(j,k)=fRand(LowerBound(j),UpperBound(j));
@@ -151,7 +203,7 @@ Genetic_GA::Genetic_GA(std::string seq){
         ithGen_fitness=i1thGen_fitness;
         std::cout<<i+1<<" out of iterations "<<noi<<" done"<<std::endl;
     }
-    BestGene=Eigen::VectorXd::Zero(23);
+    BestGene=Eigen::VectorXd::Zero(24);
     Eigen::VectorXd::Index min_index;
     BestFitness=ithGen_fitness.minCoeff(&min_index);
     BestGene=ithGen_param.col(min_index);

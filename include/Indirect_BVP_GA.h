@@ -18,7 +18,7 @@ class Indirect_BVP_GA{
         void print(std::string value);
     private:
         // time instances of all four planetary encounters
-        double t0, tGA1, tGA2, tf;
+        double t0, tGA1, tGA2, tf, tstar;
         // Spacecraft properties
         // Mass
         double m0, lambda_m0=1;

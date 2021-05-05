@@ -52,6 +52,7 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
         Lambda_VGA2_f(2)=param(21);
         // Destination/ Final Parameters
         tf=param(22);
+        tstar=param(23);
     }
     // Orbit Parameters of planets as on 2000-01-01
     {
@@ -164,6 +165,12 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
 
     Lambda_V0=V_inf_0*(m0+epsilon)*lambda_m0/(c_dash*(std::sqrt(std::pow(V_inf_0.norm(),2)+std::pow(ve,2))));
 
+    // Initial SF constraint
+    double thrust0, SF0, SF0_error;
+    thrust0=Thrust(x0).norm();
+    SF0=Lambda_V0.norm()/m0 -lambda_m0/c;
+    SF0_error=Lambda_R0.dot(V_inf_0) - thrust0*SF0;
+    fitness=fitness+std::abs(SF0_error);
     // stacked state and adjoint vector
     
     x0=Eigen::VectorXd::Zero(14);
@@ -219,6 +226,18 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
     xGA1_f.block(7,0,3,1)=Lambda_RGA1_f;
     xGA1_f.block(10,0,3,1)=Lambda_VGA1_f;
     xGA1_f(13)=lambda_mGA1_f;
+    
+    // SF constraint for first GA
+        double thrustGA1_i, SFGA1_i, SFGA1_i_error;
+        thrustGA1_i=Thrust(xGA1_i).norm();
+        SFGA1_i=Lambda_VGA1_i.norm()/mGA1_i -lambda_mGA1_i/c;
+        SFGA1_i_error=Lambda_RGA1_i.dot(V_inf_GA1_i) + thrustGA1_i*SFGA1_i;
+        double thrustGA1_f, SFGA1_f, SFGA1_f_error;
+        thrustGA1_f=Thrust(xGA1_f).norm();
+        SFGA1_f=Lambda_VGA1_f.norm()/mGA1_f -lambda_mGA1_f/c;
+        SFGA1_f_error=Lambda_RGA1_f.dot(V_inf_GA1_f) + thrustGA1_f*SFGA1_f;
+        fitness=fitness+std::abs(SFGA1_i_error-SFGA1_f_error);
+
     // propagate second section of heliocentric trajectory
     xGA2_i=propagate(xGA1_f, tGA1, tGA2);
     // Define spacecraft vectors just before gravity assist
@@ -263,7 +282,7 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
         cos_2phi=2*cos_phi*cos_phi - 1;
         double error;
         error= V_inf_GA2_f.dot(V_inf_GA2_i) + cos_2phi*v_inf_GA2_i*v_inf_GA2_i;
-        fitness= fitness + abs(error);
+        fitness= fitness + std::abs(error);
     
     // stacked state and adjoint vector
     xGA2_f=Eigen::VectorXd::Zero(14);
@@ -273,6 +292,18 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
     xGA2_f.block(7,0,3,1)=Lambda_RGA2_f;
     xGA2_f.block(10,0,3,1)=Lambda_VGA2_f;
     xGA2_f(13)=lambda_mGA2_f;
+
+    // SF constraint for second GA
+        double thrustGA2_i, SFGA2_i, SFGA2_i_error;
+        thrustGA2_i=Thrust(xGA2_i).norm();
+        SFGA2_i=Lambda_VGA2_i.norm()/mGA2_i -lambda_mGA2_i/c;
+        SFGA2_i_error=Lambda_RGA2_i.dot(V_inf_GA2_i) + thrustGA2_i*SFGA2_i;
+        double thrustGA2_f, SFGA2_f, SFGA2_f_error;
+        thrustGA2_f=Thrust(xGA2_f).norm();
+        SFGA2_f=Lambda_VGA2_f.norm()/mGA2_f -lambda_mGA2_f/c;
+        SFGA2_f_error=Lambda_RGA2_f.dot(V_inf_GA2_f) + thrustGA2_f*SFGA2_f;
+        fitness=fitness+std::abs(SFGA2_i_error-SFGA2_f_error);
+
     // propagate second section of heliocentric trajectory
     xf=propagate(xGA2_f, tGA2, tf);
     // Define spacecraft vectors just before gravity assist
@@ -290,8 +321,11 @@ Indirect_BVP_GA::Indirect_BVP_GA(Eigen::VectorXd param, std::string seq){
 
         delR_f=delR_f.cwiseAbs();
         delV_f=delV_f.cwiseAbs();
+        double SFf, lambda_Vf;
+        lambda_Vf=xf.block(10,0,3,1).norm();
+        SFf=lambda_Vf/xf(6) -xf(13)/c;
 
-        fitness=fitness + delR_f.sum()+delV_f.sum();
+        fitness=fitness + delR_f.sum()+delV_f.sum()+std::abs(SF0_error);
 
     if (std::isnan(fitness)==1)
     {

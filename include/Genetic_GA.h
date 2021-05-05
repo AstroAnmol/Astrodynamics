@@ -8,18 +8,26 @@ class Genetic_GA{
         double get_BestFitness();
         Eigen::VectorXd get_BestGene();
     private:
-        int noi=50; // number of iterations
-        int pop_size=100; // population size
+        int noi=60; // number of iterations
+        int pop_size=2000; // population size
         double t0_lb=58;
         double t0_up=59;
+        double tGA1_lb;
+        double tGA1_up;
+        double tGA2_lb;
+        double tGA2_up;
         double tf_lb=73;
         double tf_up=74;
-        double m0_lb=0.97;
-        double m0_up=1;
+        double tstar_lb=73;
+        double tstar_up=74;
+        double m0_lb=0.985;
+        double m0_up=0.995;
         double lambdaR0_lb=-2;
         double lambdaR0_ub=2;
-        double vinf_lp=-0.025;//8.3936E-4;
-        double vinf_up=0.025;//8.3936E-4;
+        double vinf_dep_lp=-0.025;//8.3936E-4;
+        double vinf_dep_up=0.025;//8.3936E-4;
+        double vinf_GA_lp=-0.05;//8.3936E-4;
+        double vinf_GA_up=0.05;//8.3936E-4;
 
         double BestFitness;
         Eigen::VectorXd BestGene;
