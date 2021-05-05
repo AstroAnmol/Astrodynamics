@@ -192,6 +192,11 @@ void Indirect_BVP_DM::propagate(){
     x0.block(10,0,3,1)=Lambda_V0;
     x0(13)=lambda_m0;
 
+    double thrust0, SF0, SF0_error;
+    thrust0=Thrust(x0).norm();
+    SF0=Lambda_V0.norm()/m0 -lambda_m0/c;
+    SF0_error=Lambda_R0.dot(V_inf_0) - thrust0*SF0;
+
     // setting initial values
     x_propagated.col(0)=x0;
     time.col(0)=0;
@@ -216,8 +221,11 @@ void Indirect_BVP_DM::propagate(){
 
     delR_f=delR_f.cwiseAbs();
     delV_f=delV_f.cwiseAbs();
-
-    fitness=delR_f.sum()+delV_f.sum();
+    
+    double SFf, lambda_Vf;
+    lambda_Vf=xf.block(10,0,3,1).norm();
+    SFf=lambda_Vf/xf(6) -xf(13)/c;
+    fitness=delR_f.sum()+delV_f.sum()+std::abs(SFf)+std::abs(SF0_error);
 
     if (std::isnan(fitness)==1)
     {
@@ -254,7 +262,7 @@ void Indirect_BVP_DM::save(std::string name){
 
     // setting initial values
     x_propagated.col(0)=x0;
-    time.col(0)=0;
+    time.col(0)=t0;
     th.col(0)=0;
     while (t<noi){
         //RK4 Integrator

@@ -27,7 +27,7 @@ int main(){
         Trial.save("Try");
         */
         
-        for (int i = 2; i < 8; i++)
+        for (int i = 0; i < 1; i++)
         {
             Genetic_DM trial1;
             Eigen::VectorXd BestGeneT1;
