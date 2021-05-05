@@ -45,33 +45,33 @@ Genetic_GA::Genetic_GA(std::string seq){
     LowerBound(22)=tf_lb;
     LowerBound(23)=tstar_lb;
 
-    UpperBound(0)=t0_lb;
-    UpperBound(1)=m0_lb;
-    UpperBound(2)=vinf_dep_lp;
-    UpperBound(3)=vinf_dep_lp;
-    UpperBound(4)=lambdaR0_lb;
-    UpperBound(5)=lambdaR0_lb;
-    UpperBound(6)=lambdaR0_lb;
+    UpperBound(0)=t0_up;
+    UpperBound(1)=m0_up;
+    UpperBound(2)=vinf_dep_up;
+    UpperBound(3)=vinf_dep_up;
+    UpperBound(4)=lambdaR0_ub;
+    UpperBound(5)=lambdaR0_ub;
+    UpperBound(6)=lambdaR0_ub;
     // First Gravity Assist Parameters
-    UpperBound(7)=tGA1_lb;
-    UpperBound(8)=vinf_GA_lp;
-    UpperBound(9)=vinf_GA_lp;
-    UpperBound(10)=lambdaR0_lb;
-    UpperBound(11)=lambdaR0_lb;
-    UpperBound(12)=lambdaR0_lb;
+    UpperBound(7)=tGA1_up;
+    UpperBound(8)=vinf_GA_up;
+    UpperBound(9)=vinf_GA_up;
+    UpperBound(10)=lambdaR0_ub;
+    UpperBound(11)=lambdaR0_ub;
+    UpperBound(12)=lambdaR0_ub;
     // Second Gravity Assist Parameters (with minimum height constraint)
-    UpperBound(13)=tGA2_lb;
-    UpperBound(14)=vinf_GA_lp;
-    UpperBound(15)=vinf_GA_lp;
-    UpperBound(16)=lambdaR0_lb;
-    UpperBound(17)=lambdaR0_lb;
-    UpperBound(18)=lambdaR0_lb;
-    UpperBound(19)=lambdaR0_lb;
-    UpperBound(20)=lambdaR0_lb;
-    UpperBound(21)=lambdaR0_lb;
+    UpperBound(13)=tGA2_up;
+    UpperBound(14)=vinf_GA_up;
+    UpperBound(15)=vinf_GA_up;
+    UpperBound(16)=lambdaR0_ub;
+    UpperBound(17)=lambdaR0_ub;
+    UpperBound(18)=lambdaR0_ub;
+    UpperBound(19)=lambdaR0_ub;
+    UpperBound(20)=lambdaR0_ub;
+    UpperBound(21)=lambdaR0_ub;
     // Destination/ Final Parameters
-    UpperBound(22)=tf_lb;
-    UpperBound(23)=tstar_lb;
+    UpperBound(22)=tf_up;
+    UpperBound(23)=tstar_up;
 
     //intialise first generation
     for (int i = 0; i < pop_size; i++){

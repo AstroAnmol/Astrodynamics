@@ -10,14 +10,14 @@ class Genetic_GA{
     private:
         int noi=60; // number of iterations
         int pop_size=2000; // population size
-        double t0_lb=58;
-        double t0_up=59;
-        double tGA1_lb;
-        double tGA1_up;
-        double tGA2_lb;
-        double tGA2_up;
-        double tf_lb=73;
-        double tf_up=74;
+        double t0_lb=65;
+        double t0_up=68;
+        double tGA1_lb=73;
+        double tGA1_up=76;
+        double tGA2_lb=78;
+        double tGA2_up=81;
+        double tf_lb=94;
+        double tf_up=96;
         double tstar_lb=73;
         double tstar_up=74;
         double m0_lb=0.985;
