@@ -75,7 +75,7 @@ Genetic_GA::Genetic_GA(std::string seq){
 
     //intialise first generation
     for (int i = 0; i < pop_size; i++){
-        for (int j = 0; j < 24; i++){
+        for (int j = 0; j < 24; j++){
             FirstGen_param(j,i)=fRand(LowerBound(j),UpperBound(j));
         }
         Eigen::VectorXd Pop_param;
@@ -152,7 +152,7 @@ Genetic_GA::Genetic_GA(std::string seq){
                 if (i1thGen_param(j,k)<LowerBound(j)){
                     i1thGen_param(j,k)=LowerBound(j);
                 }
-                else if (i1thGen_param(j,k)>UpperBound(j)){
+                else if (i1thGen_param(j,k)>UpperBound(j)){ 
                     i1thGen_param(j,k)=UpperBound(j);
                 }
                 else if (i1thGen_param(j,k+pop_size/2)<LowerBound(j)){

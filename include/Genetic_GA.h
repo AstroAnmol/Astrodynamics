@@ -9,7 +9,7 @@ class Genetic_GA{
         Eigen::VectorXd get_BestGene();
     private:
         int noi=60; // number of iterations
-        int pop_size=2000; // population size
+        int pop_size=200; // population size
         double t0_lb=65;
         double t0_up=68;
         double tGA1_lb=73;
