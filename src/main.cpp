@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <eigen-3.3.7/Eigen/Dense>
+#include <eigen-3.4.0/Eigen/Dense>
 #include <cmath>
 #include <queue>
 #include <string>
@@ -10,14 +10,14 @@
 #include <vector>
 #include <random>
 #include "orbit.h"
-#include "cr3bp.h"
-#include "Indirect_BVP_DM.h"
-#include "Genetic_DM.h"
-#include "Indirect_BVP_GA.h"
-#include "Genetic_GA.h"
+// #include "cr3bp.h"
+// #include "Indirect_BVP_DM.h"
+// #include "Genetic_DM.h"
+// #include "Indirect_BVP_GA.h"
+// #include "Genetic_GA.h"
 
 int main(){
-        srand(time(0));
+        // srand(time(0));
         /*
         Eigen::VectorXd Gene(8);
         Gene<<50.6555, 0.972694, -0.000650264, -0.000551347, -0.590737, -1.39754, -0.552314, 63.0691;
@@ -27,7 +27,7 @@ int main(){
         Trial.print("all scalars");
         Trial.save("Try");
         */
-        
+        /*
         for (int i = 0; i < 1; i++)
         {
             Genetic_GA trial1("EEMM");
@@ -42,5 +42,22 @@ int main(){
             oss << "EEMM_" << i;
             name=oss.str();
             Best.save(name);
-        }      
+        }    
+        */
+       printf("HELLO WORLD");
+    double a, e, i, omega, Omega, theta, mu;
+    a =         6798.1366;
+    e =         0.1;
+    i =         45;
+    omega =     45;
+    Omega =     60;
+    theta =     180;
+    mu =        398600.4418;
+
+    orbit HW3;
+    Eigen::VectorXd OE(6);
+    OE << a, e, i, omega, Omega, theta;
+    HW3.set_OE(OE);
+    HW3.set_mu(0);
+    HW3.print_cartesian();
 }

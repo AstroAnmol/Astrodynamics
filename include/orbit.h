@@ -1,6 +1,6 @@
 #ifndef ORBIT_H
 #define ORBIT_H
-#include <eigen-3.3.7/Eigen/Dense>
+#include <eigen-3.4.0/Eigen/Dense>
 
 class orbit{
 	public:
@@ -47,7 +47,7 @@ class orbit{
 		Eigen::Matrix3d Rctop;
 		Eigen::Matrix3d Rptoc;
 		//gravitational parameters
-		double mu_E=398600.4; //km^3/s^2
+		double mu_E=398600.4418; //km^3/s^2
 		double J2_E=0.00108248; 
 		double mu_S=132712440018; //km^3/s^2
 		double mu_dimensionless=1; 
