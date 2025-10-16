@@ -1,6 +1,6 @@
 #ifndef IND_DM_H
 #define IND_DM_H
-#include <eigen-3.3.7/Eigen/Dense>
+#include <eigen-3.4.0/Eigen/Dense>
 #include "orbit.h"
 
 class Indirect_BVP_DM{

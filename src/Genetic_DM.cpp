@@ -13,7 +13,7 @@
 Eigen::Vector3i top3(Eigen::VectorXd a){
     int k=3;
     Eigen::Vector3i output;
-    std::priority_queue<std::pair<double, int>> q;
+    std::priority_queue< std::pair<double, int> > q;
     for (int i = 0; i < a.size(); ++i) {
         q.push(std::pair<double, int>(a(i), i));
     }

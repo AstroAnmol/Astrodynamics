@@ -230,7 +230,7 @@ void orbit::cartesian_to_OE(){
 
     //calculating H vector and N vector
     H= R.cross(V);
-    N= {-H[1],H[0],0}; //k X H
+    N << -H[1],H[0],0; //k X H
 
     // norm of V and R
     r=R.norm();
@@ -328,7 +328,7 @@ Eigen::ArrayXXd orbit::cartesian_to_OE_I(Eigen::Vector3d x, Eigen::Vector3d y){
 
     //calculating H vector and N vector
     H= x.cross(y);
-    N= {-H[1],H[0],0}; //k X H
+    N<<-H[1],H[0],0; //k X H
 
     // norm of V and R
     r=x.norm();
