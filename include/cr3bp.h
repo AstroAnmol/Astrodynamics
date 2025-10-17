@@ -1,6 +1,6 @@
 #ifndef CR3BP_H
 #define CR3BP_H
-#include <eigen-3.4.0/Eigen/Dense>
+#include <eigen-5.0.0/Eigen/Dense>
 
 class cr3bp{
     private:
