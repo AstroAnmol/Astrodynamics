@@ -501,7 +501,7 @@ void orbit::propagate_2BP(double step,double trange, int EOM_int, std::string na
     Matrice.col(18)=H_propagated.row(1);
     Matrice.col(19)=H_propagated.row(2);
     std::ofstream theFile;
-    theFile.open(name + "_file.csv");
+    theFile.open("Results/" + name + "_file.csv");
     theFile << "Time (sec),Semi-Major Axis (km),Eccentricity,Inclination (deg),RAAN (deg),Argument of Periapsis (deg),True Anomaly (deg),Orbital Energy (km^2/sec^2),Radius_1 (km),Radius_2 (km),Radius_3 (km),Velocity_1 (km/s),Velocity_2 (km/s),Velocity_3 (km/s),Acceleration_1 (km/s^2),Acceleration_2 (km/s^2),Acceleration_3 (km/s^2),Angular_Momemntum_1 (km^2/s),Angular_Momemntum_2 (km^2/s),Angular_Momemntum_3 (km^2/s)" << std::endl;
     theFile << Matrice.format(csv)<< std::endl;
     theFile.close();

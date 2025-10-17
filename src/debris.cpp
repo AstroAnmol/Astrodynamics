@@ -75,8 +75,8 @@ void Debris::read_propagation_csv(const std::string &filename) {
 // Read satellite propagation file (tries "name_file.csv" then "name") and
 // populate internal `sat_orbit` matrix using read_propagation_csv.
 void Debris::read_sat_orbit(std::string name) {
-    std::string fn1 = name + "_file.csv";
-    std::string fn2 = name;
+    std::string fn1 = "Results/" + name + "_file.csv";
+    std::string fn2 = "Results/" + name;
 
     // try first filename
     read_propagation_csv(fn1);
@@ -124,6 +124,7 @@ void Debris::check_detection() {
     // and compare it with the debris position and soliton parameters.
     // Implementation would depend on the specific detection criteria.
     bool detected_global = false;
+    double detections = 0;
     for (int i = 0; i < sat_orbit.rows(); ++i) {
         // Time (sec),Semi-Major Axis (km),Eccentricity,Inclination (deg),RAAN (deg),Argument of Periapsis (deg),True Anomaly (deg),Orbital Energy (km^2/sec^2),Radius_1 (km),Radius_2 (km),Radius_3 (km),Velocity_1 (km/s),Velocity_2 (km/s),Velocity_3 (km/s),Acceleration_1 (km/s^2),Acceleration_2 (km/s^2),Acceleration_3 (km/s^2),Angular_Momemntum_1 (km^2/s),Angular_Momemntum_2 (km^2/s),Angular_Momemntum_3 (km^2/s)
         Eigen::Vector3d sat_pos = sat_orbit.row(i).segment<3>(8);
@@ -169,28 +170,35 @@ void Debris::check_detection() {
         if (within_cone(sensor_1_ECI) && within_spherical_range(sensor_1_ECI, time)){
             detected = true;
             detected_global = true;
+            detections++;
             // print detection event
             std::cout << "Detection at time " << time << " sec by sensor 1\n";
         } 
         if (within_cone(sensor_2_ECI) && within_spherical_range(sensor_2_ECI, time)){
             detected = true;
             detected_global = true;
+            detections++;
             std::cout << "Detection at time " << time << " sec by sensor 2\n";
         }
         if (within_cone(sensor_3_ECI) && within_spherical_range(sensor_3_ECI, time)){
             detected = true;
             detected_global = true;
+            detections++;
             std::cout << "Detection at time " << time << " sec by sensor 3\n";
         }
         if (within_cone(sensor_4_ECI) && within_spherical_range(sensor_4_ECI, time)){
             detected = true;
             detected_global = true;
+            detections++;
             std::cout << "Detection at time " << time << " sec by sensor 4\n";
         }
     }
     // if never detected, you can print no detection
     if (!detected_global){
         std::cout << "No detection";
+    }
+    else {
+        std::cout << "Total detections: " << detections << "\n";
     }
 }
 
