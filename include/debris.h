@@ -10,7 +10,8 @@ public:
 
     // set functions
     void set_state(Eigen::Vector3d pos, Eigen::Vector3d vel);
-    void set_soliton_cone(double angle, double height);
+    void set_soliton_params(double angle, double height, double vel_multiplier);
+    void set_detection_freq(double freq);
 
     void check_detection();
 
@@ -29,11 +30,16 @@ private:
     double mass; // in kg
     double size; // in meters
 
+    // sensor parameters
+    double detection_freq; // in Hz
+    double boom_length; // in km
+
     // state vectors
     Eigen::Vector3d position; // in km
     Eigen::Vector3d velocity; // in km/s
 
     // soliton parameters
+    double sol_vel_multiplier;
     Eigen::Vector3d soliton_vel;
 
     // cone parameters for soliton

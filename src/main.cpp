@@ -69,7 +69,9 @@ int main(){
     // soliton characteristics
     double cone_angle = 45 * M_PI / 180; // radians
     double cone_height = 10;              // km
-
+    double sol_vel_multiplier = 1.2;      // arbitrary multiplier
+    double time_step = 0.0001; // seconds
+    double detection_freq = 1/time_step; // Hz
     // debris object
     Eigen::Vector3d r1, v1;
     double a_d, e_d, i_d, omega_d, Omega_d, theta_d;
@@ -91,7 +93,8 @@ int main(){
     v1 = cartesian_d.segment(3,3);
     Debris D1;
     D1.set_state(r1, v1);
-    D1.set_soliton_cone(cone_angle, cone_height);
+    D1.set_soliton_params(cone_angle, cone_height, sol_vel_multiplier);
+    D1.set_detection_freq(detection_freq);
 
     std::cout << "Soliton velocity: " << D1.get_soliton_vel() << " km/s" << std::endl;
     // get time to reach cone base
@@ -100,8 +103,7 @@ int main(){
 
 
     // propagate satellite orbit to the same time
-    double step_size = 0.001; // seconds
-    sat.propagate_2BP(step_size, time_to_cone_base, 0, "sat_prop");
+    sat.propagate_2BP(time_step, time_to_cone_base, 0, "sat_prop");
 
 
     D1.read_sat_orbit("sat_prop");

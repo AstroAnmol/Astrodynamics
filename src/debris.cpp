@@ -104,16 +104,22 @@ void Debris::read_sat_orbit(std::string name) {
 void Debris::set_state(Eigen::Vector3d pos, Eigen::Vector3d vel) {
     position = pos;
     velocity = vel;
-
-    soliton_vel = vel * 1.2; // assuming soliton moves with 1.2 times the debris initially
 }
 
-// set soliton cone parameters
-void Debris::set_soliton_cone(double angle, double height) {
+// set soliton parameters
+void Debris::set_soliton_params(double angle, double height, double vel_multiplier) {
     cone_angle = angle;
     cone_height = height;
+    sol_vel_multiplier = vel_multiplier;
+
+    soliton_vel = sol_vel_multiplier * velocity;
 
     time_to_reach_cone_base = cone_height / soliton_vel.norm(); // time to reach the apex of the cone
+}
+
+// set detection frequency
+void Debris::set_detection_freq(double freq) {
+    detection_freq = freq;
 }
 
 
@@ -219,7 +225,7 @@ bool Debris::within_cone(Eigen::Vector3d pos) {
 bool Debris::within_spherical_range(Eigen::Vector3d pos, double time) {
     Eigen::Vector3d debris_to_pos = pos - position;
     double range = time * soliton_vel.norm();
-    double del_range = 0.001 * soliton_vel.norm();
+    double del_range = 1/detection_freq * soliton_vel.norm();
     return (debris_to_pos.norm() >= range - del_range && debris_to_pos.norm() <= range + del_range);
 }
 
