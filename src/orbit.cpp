@@ -5,8 +5,6 @@
 #include <iomanip>
 #include "orbit.h"
 
-//orbit::orbit(){}	
-
 
 double stumpff_C(double z){
     if (z>1e-6){
@@ -95,12 +93,12 @@ Eigen::ArrayXXd lambert(Eigen::Vector3d R0,Eigen::Vector3d Rf,double TOF, int DM
 }
 
 //set time period
-void orbit::set_TimePeriod(){
+void Orbit::set_TimePeriod(){
     TimePeriod=2*M_PI*std::sqrt(std::pow(a,3)/mu);
 }
 
 //set mu
-void orbit::set_mu(int i){
+void Orbit::set_mu(int i){
     if (i==0){
         mu=mu_E;
     }
@@ -113,18 +111,18 @@ void orbit::set_mu(int i){
 }
 
 //set thrust
-void orbit::set_thrust(double aT){
+void Orbit::set_thrust(double aT){
     thrust=aT;
 }
 
 
 //get time period
-double orbit::get_TimePeriod(){
+double Orbit::get_TimePeriod(){
     return TimePeriod;
 }
 
 //set the values of Orbital Elements, km, degrees
-void orbit::set_OE(Eigen::VectorXd OE){
+void Orbit::set_OE(Eigen::VectorXd OE){
     a= OE(0);
     e= OE(1);
     i= OE(2)*M_PI/180.0;
@@ -138,7 +136,7 @@ void orbit::set_OE(Eigen::VectorXd OE){
 
 
 //print Orbital Elements, km, degrees
-void orbit::print_OE(){
+void Orbit::print_OE(){
     std::cout << "semi-major axis (km): " << a << std::endl;
     std::cout << "eccentricity: " << e << std::endl;
     std::cout << "inclination (rad): " << i*180/M_PI << std::endl;
@@ -148,7 +146,7 @@ void orbit::print_OE(){
 }
 
 //get time period
-Eigen::VectorXd orbit::get_cartesian(){
+Eigen::VectorXd Orbit::get_cartesian(){
     Eigen::VectorXd cartesian(6);
     cartesian.block(0,0,3,1)=R;
     cartesian.block(3,0,3,1)=V;
@@ -157,7 +155,7 @@ Eigen::VectorXd orbit::get_cartesian(){
 
 
 //set the values of cartesian coordinates km, km/s
-void orbit::set_cartesian(Eigen::Vector3d r, Eigen::Vector3d v){
+void Orbit::set_cartesian(Eigen::Vector3d r, Eigen::Vector3d v){
     R=r;
     V=v;
     cartesian_to_OE();
@@ -165,22 +163,22 @@ void orbit::set_cartesian(Eigen::Vector3d r, Eigen::Vector3d v){
 }
 
 //print the values of cartesian coordinates km, km/s
-void orbit::print_cartesian(){
+void Orbit::print_cartesian(){
     std::cout << "Radius: " << R.transpose() << std::endl;
     std::cout << "Velocity: " << V.transpose() << std::endl;
 }
 //print the values of perifocal coordinates km, km/s
-void orbit::print_perifocal(){
+void Orbit::print_perifocal(){
     std::cout << "Radius (perifocal): " << Rp.transpose() << std::endl;
     std::cout << "Velocity (perifocal): " << Vp.transpose() << std::endl;
 }
 //print the rotation matrices between perifocal and ECI frames
-void orbit::print_rotMat(){
+void Orbit::print_rotMat(){
     std::cout << "Perifocal to Cartesian \n" << Rptoc << std::endl;
     std::cout << "Cartesian to Perifocal \n" << Rctop << std::endl;
 }
-//convert orbital elements to cartesian
-void orbit::OE_to_cartesian(){
+//convert Orbital elements to cartesian
+void Orbit::OE_to_cartesian(){
     double p, r;
 
     p=a*(1-e*e);
@@ -221,7 +219,7 @@ void orbit::OE_to_cartesian(){
     V=Rptoc*Vp;
 }
 //convert cartesian to orbital elements
-void orbit::cartesian_to_OE(){
+void Orbit::cartesian_to_OE(){
     Eigen::Vector3d H;
     Eigen::Vector3d N;
     Eigen::Vector3d E;
@@ -264,7 +262,7 @@ void orbit::cartesian_to_OE(){
 }
 
 // function for equation of motion for 2BP
-Eigen::VectorXd orbit::EoM_2BP(Eigen::Vector3d r, Eigen::Vector3d v){
+Eigen::VectorXd Orbit::EoM_2BP(Eigen::Vector3d r, Eigen::Vector3d v){
     Eigen::VectorXd acc(6);
     acc(0)=v(0);
     acc(1)=v(1);
@@ -275,7 +273,7 @@ Eigen::VectorXd orbit::EoM_2BP(Eigen::Vector3d r, Eigen::Vector3d v){
     return acc;
 }
 // function for equation of motion for 2BP with thrust in velocity direction
-Eigen::VectorXd orbit::EoM_2BP_thrust_V(Eigen::Vector3d r, Eigen::Vector3d v){
+Eigen::VectorXd Orbit::EoM_2BP_thrust_V(Eigen::Vector3d r, Eigen::Vector3d v){
     Eigen::VectorXd acc(6);
     acc(0)=v(0);
     acc(1)=v(1);
@@ -287,7 +285,7 @@ Eigen::VectorXd orbit::EoM_2BP_thrust_V(Eigen::Vector3d r, Eigen::Vector3d v){
 }
 
 // function for equation of motion for 2BP with J2 perterbations
-Eigen::VectorXd orbit::EoM_2BP_J2(Eigen::Vector3d R, Eigen::Vector3d V){
+Eigen::VectorXd Orbit::EoM_2BP_J2(Eigen::Vector3d R, Eigen::Vector3d V){
     Eigen::VectorXd acc(6);
     double r;
     r=R.norm();
@@ -301,7 +299,7 @@ Eigen::VectorXd orbit::EoM_2BP_J2(Eigen::Vector3d R, Eigen::Vector3d V){
 }
 
 // Equations of Motion Function
-Eigen::VectorXd orbit::EoM(Eigen::Vector3d r, Eigen::Vector3d v, int EOM_int){
+Eigen::VectorXd Orbit::EoM(Eigen::Vector3d r, Eigen::Vector3d v, int EOM_int){
     if (EOM_int==0){
         return EoM_2BP(r,v);
     }
@@ -318,7 +316,7 @@ Eigen::VectorXd orbit::EoM(Eigen::Vector3d r, Eigen::Vector3d v, int EOM_int){
 }
 
 //Private function to covert any cartesian coordinates to Orbital Elements
-Eigen::ArrayXXd orbit::cartesian_to_OE_I(Eigen::Vector3d x, Eigen::Vector3d y){
+Eigen::ArrayXXd Orbit::cartesian_to_OE_I(Eigen::Vector3d x, Eigen::Vector3d y){
     Eigen::Vector3d H;
     Eigen::Vector3d N;
     Eigen::Vector3d E;
@@ -369,14 +367,14 @@ Eigen::ArrayXXd orbit::cartesian_to_OE_I(Eigen::Vector3d x, Eigen::Vector3d y){
     return OE1;
 }
 
-Eigen::Vector3d orbit::angular_mom(Eigen::Vector3d x, Eigen::Vector3d y){
+Eigen::Vector3d Orbit::angular_mom(Eigen::Vector3d x, Eigen::Vector3d y){
     Eigen::Vector3d H;
     //calculating H vector and N vector
     H= x.cross(y);
     return H;
 }
 
-double orbit::orbital_energy(Eigen::Vector3d x, Eigen::Vector3d y, int EOM_int){
+double Orbit::orbital_energy(Eigen::Vector3d x, Eigen::Vector3d y, int EOM_int){
     double orbital_energy, r,v;
     r=x.norm();
     v=y.norm();
@@ -394,7 +392,7 @@ double orbit::orbital_energy(Eigen::Vector3d x, Eigen::Vector3d y, int EOM_int){
     return orbital_energy;
 }
 
-void orbit::propagate_2BP(double step,double trange, int EOM_int, std::string name){
+void Orbit::propagate_2BP(double step,double trange, int EOM_int, std::string name){
     int t=0;
     //number of steps
     int noi=trange/step;
@@ -509,7 +507,7 @@ void orbit::propagate_2BP(double step,double trange, int EOM_int, std::string na
 
 
 // Kepler's Equation Solver
- Eigen::VectorXd orbit::Kepler_prob(Eigen::Vector3d R0, Eigen::Vector3d V0, double del_t){
+ Eigen::VectorXd Orbit::Kepler_prob(Eigen::Vector3d R0, Eigen::Vector3d V0, double del_t){
     double alpha=1/a;
     double chi_0;
     double chi=chi_0;

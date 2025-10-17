@@ -2,7 +2,7 @@
 #define ORBIT_H
 #include <eigen-5.0.0/Eigen/Dense>
 
-class orbit{
+class Orbit{
 	public:
 		//set and print functions
 		void set_OE(Eigen::VectorXd OE);
