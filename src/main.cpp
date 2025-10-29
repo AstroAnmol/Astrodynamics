@@ -11,6 +11,7 @@
 #include <random>
 #include "orbit.h"
 #include "debris.h"
+#include "satellite.h"
 // #include "cr3bp.h"
 // #include "Indirect_BVP_DM.h"
 // #include "Genetic_DM.h"
@@ -27,7 +28,7 @@ int main(){
     Omega =     0;
     theta =     0;
 
-    orbit sat;
+    Orbit sat;
     Eigen::VectorXd OE(6);
     OE << a, e, i, omega, Omega, theta;
     sat.set_OE(OE);
@@ -43,8 +44,9 @@ int main(){
     double cone_angle = 45 * M_PI / 180; // radians
     double cone_height = 10;              // km
     double sol_vel_multiplier = 1.2;      // arbitrary multiplier
-    double time_step = 0.0001; // seconds
-    double detection_freq = 1/time_step; // Hz
+    double detection_freq = 10000; // Hz
+    double time_step = 1/detection_freq; // seconds
+    
     // debris object
     Eigen::Vector3d r1, v1;
     double a_d, e_d, i_d, omega_d, Omega_d, theta_d;
@@ -57,13 +59,26 @@ int main(){
 
     Eigen::VectorXd OE_d(6);
     OE_d << a_d, e_d, i_d, omega_d, Omega_d, theta_d;
-    orbit debris;
+    Orbit debris;
     debris.set_OE(OE_d);
     debris.set_mu(0);
     debris.print_cartesian();
     Eigen::VectorXd cartesian_d = debris.get_cartesian();
     r1 = cartesian_d.segment(0,3);
     v1 = cartesian_d.segment(3,3);
+
+    std::cout << "----------------------------------------\n";
+    std::cout << "Satellite Object Detection Simulation\n";
+    std::cout << "----------------------------------------\n";
+
+    Satellite satellite;
+    satellite.set_soliton_state(r1, v1);
+    satellite.detect_soliton_over_time();
+
+    std::cout << "----------------------------------------\n";
+    std::cout << "Debris Object Detection Simulation\n";
+    std::cout << "----------------------------------------\n";
+
     Debris D1;
     D1.set_state(r1, v1);
     D1.set_soliton_params(cone_angle, cone_height, sol_vel_multiplier);

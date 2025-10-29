@@ -26,17 +26,15 @@ public:
     void read_propagation_csv(const std::string &filename);
 
 private:
-    // mass and size
-    double mass; // in kg
-    double size; // in meters
 
     // sensor parameters
     double detection_freq; // in Hz
     double boom_length; // in km
 
-    // state vectors
+    // initial state vectors
     Eigen::Vector3d position; // in km
     Eigen::Vector3d velocity; // in km/s
+
 
     // soliton parameters
     double sol_vel_multiplier;

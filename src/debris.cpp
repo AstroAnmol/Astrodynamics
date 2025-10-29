@@ -1,5 +1,4 @@
 #include "debris.h"
-#include "orbit.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>

@@ -17,6 +17,12 @@ public:
     Eigen::Vector3d get_velocity();
     double get_time_to_reach_cone_base();
 
+    // check within cone
+    bool within_cone(Eigen::Vector3d pos);
+
+    // check within spherical detection range
+    bool within_spherical_range(Eigen::Vector3d pos, double time, double detection_freq);
+
 private:
     // soliton parameters
     double cone_angle; // in radians
@@ -27,6 +33,7 @@ private:
 
     Eigen::Vector3d debris_pos; // debris position when soliton is generated
     Eigen::Vector3d debris_vel; // debris velocity when soliton is generated
+
 };
 
 #endif // SOLITON_H
